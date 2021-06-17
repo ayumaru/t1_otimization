@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 import argparse
 import fileinput
@@ -25,17 +27,16 @@ problema da mochila com memoria
 def verificalista(lst):
     return len(set(lst)) == 1
 
-def testeru(x):
+def combinacao_valores(x, y):
     # x = [100, 200, 300]
-    x = [200,330,420,500]
-    y = [10,5,10,8]
+    # x = [200,330,420,500]
+    # y = [10,5,10,8]
     t = []
     j = 1
     flag = 1
     # Laco para pegar todas as combinacoes com repeticao que a soma de todos os elementos nao ultrapasse 540 
     while (flag):
         flag = 0
-        # print(list(combinations_with_replacement(x,j)))
         for k in list(combinations_with_replacement(x,j)):
             if sum(list(k)) <= 540:
                 t.append(k)
@@ -50,7 +51,6 @@ def testeru(x):
         flag = 0
         for i in tupla:
             if (i != min(x)):
-            #if (i != 100):
                 flag = 1
                 break
         if (flag == 1):
@@ -58,18 +58,14 @@ def testeru(x):
         if not verificalista(tupla) == True:
             vec.append(tupla)
     
-    print("vec antes de entrar no vec1")
-    print(vec)
     # adicionar as outras combinacoes de valores se existirem 
     vec1 = []
     for x1 in x:
         for tupla in vec:
-            # if (sum(tupla) + 100 < 540): next
             if (sum(tupla)+ min(x) <= 540 ): next
             else: vec1.append(tupla)
 
     # Vai filtrar as combinacoes de vec1 e adicionar a quantidade de vezes que cada um aparece e organizar em uma lista
-    print("vec2 a baixo",vec1)
     vec2 = []
     for h in vec1:
         temp = []
@@ -83,22 +79,25 @@ def testeru(x):
         else:
             vec2.append(temp)
     
-    print("pos vec2 ", vec2)
-
+    
     # vai adicionar as combinacoes que poderiam existir usando apenas o mesmo valor e adicionar a quantidade de vezes que ela pode aparecer
     for i in x:
         if i+min(x) > 540 or i == min(x): 
             hm = [(int(540 / i)), i]
             vec2.append(hm)
 
+    return vec2
     #------------- daqui pra baixo e a parte que pega as funcoes combinadas para gerar as equacoes e as restricoes
 
+
+
+def criacao_lp_solve_inst(vec2,y):
+
     # x = [200,330,420,500]
-    y = { 200: (10,200), 330: (5,330) , 420: (10, 500) , 500: (8,500) }
+    # y = { 200: (10,200), 330: (5,330) , 420: (10, 500) , 500: (8,500) }
     # y = {100: (4,100), 200: (5,200), 300: (6,300) }
     matriz = []
     temp = [ 0 for i,_ in enumerate(vec2)]
-    print("before .. ",vec2)
     # ver como contornar o fato que ele ta pegando de um grupo que ja foi pego
     for i in y: #aqui tenho a chave
         l = 0
@@ -179,7 +178,9 @@ def integridade( entrada ): #verificacao dos parametros passados para resolucao
     if (len(t_exec) != pedidos):
         exit("Inconsistencia de dados. Existem pedidos duplicados com a mesma quantidade de tempo de execucao.") 
 
-    return t_exec
+    tempos = [ t_exec[i][1] for i in t_exec ]
+
+    return t_exec , tempos
 
 
 def leitura(): #depois dar uma olhada para dar merge em tratamento + leitura
@@ -192,14 +193,10 @@ def leitura(): #depois dar uma olhada para dar merge em tratamento + leitura
 def main():
     teste = leitura() # vai ter que arrumar leitura
     # print("valor de teste: \n", teste)
-    tempos = integridade(teste) #retorna um dicionario com os tempo de forma de chave e seu conteudo uma tupla com quantidade de pedidos para aquele tempo. (n,t)
-    
-    testeru(tempos)
+    pedidos, tempos = integridade(teste) #retorna um dicionario com os tempo de forma de chave e seu conteudo uma tupla com quantidade de pedidos para aquele tempo. (n,t)
 
-  
-
-
-    # combinacoes(tempos)
+    insts = combinacao_valores(tempos, pedidos) # tratar isso e enviar so os valores de tempo em x, e pedidos em y (ja esta dessa forma em tempos)
+    criacao_lp_solve_inst(insts,pedidos) 
 
 if __name__ == "__main__":
     main()
