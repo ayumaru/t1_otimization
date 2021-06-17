@@ -28,7 +28,7 @@ def verificalista(lst):
 def testeru(x):
     # x = [100, 200, 300]
     x = [200,330,420,500]
-    y = [2,1,1,8]
+    y = [10,5,10,8]
     t = []
     j = 1
     flag = 1
@@ -45,7 +45,6 @@ def testeru(x):
 
     # print(t)z
     vec = []
-
     for tupla in t:
         flag = 0
         for i in tupla:
@@ -54,13 +53,15 @@ def testeru(x):
                 break
         if (flag == 1):
             next
-        if not verificalista(tupla) == True: vec.append(tupla)
+        if not verificalista(tupla) == True:
+            vec.append(tupla)
 
     vec1 = []
     for x1 in x:
         for tupla in vec:
             if (sum(tupla) + 100 < 540): next
             else: vec1.append(tupla)
+
 
     vec2 = []
     for h in vec1:
@@ -70,44 +71,70 @@ def testeru(x):
                 temp.append(h.count(tuplas))
                 temp.append(tuplas)
         
-        if temp in vec2: next
-        else: vec2.append(temp)
-    # vec2 = list(vec2)
+        if temp in vec2:
+            next
+        else:
+            vec2.append(temp)
+    
+
     for i in x:
-        tupla = ()
-        vec2.append( ((int(540 / i)), i) )
-    print(vec2)
-    return vec2
+        if i+min(x) > 540 or i == min(x): 
+            hm = [(int(540 / i)), i]
+            vec2.append(hm)
 
-def combinacoes(pedidos):
+    
 
-    matriz_eq = [ [] for i in range(len(pedidos)) ] # cria uma matriz de tamanho N pedidos x M equacoes
-    print(matriz_eq)
-    x = 0
-    y = 0
-    print("hum: \n ",pedidos, "\n *** \n")
-    for c in pedidos:
-        j = 1
-        y = 0
-        for c1 in pedidos: #eu to fazendo tudo do 0, tem como comecar da posicao atual de pedidos?
-            temp = pedidos[c][1] 
-            while ( (temp+pedidos[c1][1]) < 540): #tempo de um dia de trabalho-maquina 
-                temp+=pedidos[c1][1]
-                j+=1 # quantidade de vezes que aquele tempo X pode aparecer combinando com os outros pedidos
-            # print("valor x: ", x, " valor y: ", y, "\n")
-            print("valor c: ", c, " valor c1: ", c1, "\n")
-            if c != c1:
-                print("entrou aqui != \n")
-                matriz_eq[x].append(j) # x representa qual eh a linha da equacao que simultaneamente eh a eq de restricao do tempo
-            elif c == c1:
-                print("entrou aqui == c1 ", c1, "**** x: ", x, "\n")
-                matriz_eq[x].append(j)
-            j = 0
-            y+=1
-        x+=1
+    # x = [200,330,420,500]
+    y = { 200: (10,200), 330: (5,330) , 420: (10, 500) , 500: (8,500) }
+    # y = {100: (4,100), 200: (5,200), 300: (6,300) }
+    matriz = []
+    temp = [ 0 for i,_ in enumerate(vec2)]
+    print("before .. ",vec2)
+    # ver como contornar o fato que ele ta pegando de um grupo que ja foi pego
+    for i in y: #aqui tenho a chave
+        l = 0
+        for j in vec2: # aqui vou pegar cada lista 
+            if i in j: #esta dentro do vetor de pedidos 
+                ind = j.index(i)
+                temp[l] = (j[ind-1])
+            l+=1
+        matriz.append(temp)       
+        temp = [ 0 for i,_ in enumerate(vec2) ]
+        # break
+    print("matriz vem a baixo")
+    print(matriz) #tenho a matriz de pedidos
+    
+    #como a matriz foi criada usando a ordem das coisas presentes no dicionario
+    vars =[]
+    # for i,_ in enumerate(matriz): #problema eh isso ai
+     #     vars.append("x" + str(i))
+    
+    g = []
+    for i in matriz:
+        g.append(len(i))
+    for i in range(0,max(g)):
+        vars.append("x" + str(i))
+    print(vars)
 
-    print("yey \n")
-    print(matriz_eq)
+    f_desejado = 'min: ' + (' + '.join( str(v) for v in vars )) + ';\n'
+    print(f_desejado)
+    print(vars)
+
+    print("aqui")
+    # for i in y: 
+    for i,j in zip(y,matriz):
+        rest = []
+        v = 0
+        for k in j: #elementos da linha da matris
+            if k > 0:
+                # print(str(k)+vars[v])
+                rest.append( f'{k}{vars[v]}') 
+            v+=1
+        v = 0 
+        print(*rest, sep = " + ", end='')
+        print(' >= ', y[i][0], ';')
+
+
 
 def tratamento(dado):
     numeros = []
@@ -159,8 +186,8 @@ def leitura(): #depois dar uma olhada para dar merge em tratamento + leitura
 
 
 def main():
-    teste = leitura()
-    print("valor de teste: \n", teste)
+    teste = leitura() # vai ter que arrumar leitura
+    # print("valor de teste: \n", teste)
     tempos = integridade(teste) #retorna um dicionario com os tempo de forma de chave e seu conteudo uma tupla com quantidade de pedidos para aquele tempo. (n,t)
     
     testeru(tempos)
