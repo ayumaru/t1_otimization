@@ -32,6 +32,7 @@ def testeru(x):
     t = []
     j = 1
     flag = 1
+    # Laco para pegar todas as combinacoes com repeticao que a soma de todos os elementos nao ultrapasse 540 
     while (flag):
         flag = 0
         # print(list(combinations_with_replacement(x,j)))
@@ -43,26 +44,32 @@ def testeru(x):
                 break
         j+=1
 
-    # print(t)z
+    # verificacao para retirar as cominacoes que eram repetidas de alguma forma. Exemplo: (100 100 100 200) == ( 200 100 100 100)
     vec = []
     for tupla in t:
         flag = 0
         for i in tupla:
-            if (i != 100):
+            if (i != min(x)):
+            #if (i != 100):
                 flag = 1
                 break
         if (flag == 1):
             next
         if not verificalista(tupla) == True:
             vec.append(tupla)
-
+    
+    print("vec antes de entrar no vec1")
+    print(vec)
+    # adicionar as outras combinacoes de valores se existirem 
     vec1 = []
     for x1 in x:
         for tupla in vec:
-            if (sum(tupla) + 100 < 540): next
+            # if (sum(tupla) + 100 < 540): next
+            if (sum(tupla)+ min(x) <= 540 ): next
             else: vec1.append(tupla)
 
-
+    # Vai filtrar as combinacoes de vec1 e adicionar a quantidade de vezes que cada um aparece e organizar em uma lista
+    print("vec2 a baixo",vec1)
     vec2 = []
     for h in vec1:
         temp = []
@@ -76,13 +83,15 @@ def testeru(x):
         else:
             vec2.append(temp)
     
+    print("pos vec2 ", vec2)
 
+    # vai adicionar as combinacoes que poderiam existir usando apenas o mesmo valor e adicionar a quantidade de vezes que ela pode aparecer
     for i in x:
         if i+min(x) > 540 or i == min(x): 
             hm = [(int(540 / i)), i]
             vec2.append(hm)
 
-    
+    #------------- daqui pra baixo e a parte que pega as funcoes combinadas para gerar as equacoes e as restricoes
 
     # x = [200,330,420,500]
     y = { 200: (10,200), 330: (5,330) , 420: (10, 500) , 500: (8,500) }
@@ -101,27 +110,22 @@ def testeru(x):
         matriz.append(temp)       
         temp = [ 0 for i,_ in enumerate(vec2) ]
         # break
-    print("matriz vem a baixo")
-    print(matriz) #tenho a matriz de pedidos
+   
     
-    #como a matriz foi criada usando a ordem das coisas presentes no dicionario
-    vars =[]
-    # for i,_ in enumerate(matriz): #problema eh isso ai
-     #     vars.append("x" + str(i))
-    
+    # como a matriz foi criada usando a ordem das coisas presentes no dicionario
+    # gero a quantidade de variaveis baseado na quantidade de elementos em cada linha da matriz 
+    vars =[] 
     g = []
     for i in matriz:
         g.append(len(i))
     for i in range(0,max(g)):
         vars.append("x" + str(i))
-    print(vars)
-
+    
+    # monto a funcao desejada para ser resolvida pelo problema
     f_desejado = 'min: ' + (' + '.join( str(v) for v in vars )) + ';\n'
     print(f_desejado)
-    print(vars)
-
-    print("aqui")
-    # for i in y: 
+    
+    # transferencia das funcoes presentes na matriz temporaria para formato do lp_solve
     for i,j in zip(y,matriz):
         rest = []
         v = 0
