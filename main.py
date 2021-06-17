@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import fileinput
-from itertools import groupby,combinations, combinations_with_replacement
+from itertools import combinations_with_replacement
 
 def verificalista(lst):
     return len(set(lst)) == 1
